@@ -10,10 +10,12 @@ void setup() {
   Serial.begin(115200);
   while(!Serial) {
   }
-  
+
   CC3Dcomm.begin(57600);
 }
 
 void loop() {
- 
+  while(CC3Dcomm.available() > 0) {
+    Serial.println("Gut!");
+  }
 }
