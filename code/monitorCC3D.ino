@@ -1,4 +1,5 @@
 #include <SoftwareSerial.h>
+#include "UAVTalk.h"
 
 /*
   Declaration of RX and TX pins for communication with CC3D.
