@@ -1,4 +1,5 @@
 #include <SoftwareSerial.h>
+#include "DataOI.h"
 #include "UAVTalk.h"
 
 /*
@@ -16,7 +17,18 @@ void setup() {
 }
 
 void loop() {
-  while(CC3Dcomm.available() > 0) {
-    Serial.println("Gut!");
+  Serial.println(dt_roll);
+  Serial.println(dt_pitch);
+  Serial.println(dt_yaw);
+}
+
+static uavtalk_message_t msg;
+
+void serialEvent(){
+  while (CC3Dcomm.available() > 0) {
+    uint8_t c = CC3Dcomm.read();
+    if (uavtalk_parse_char(c, &msg)) {
+      uavtalk_read(&msg);
+    }
   }
 }

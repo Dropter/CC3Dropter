@@ -144,6 +144,111 @@ void uavtalk_send_gcstelemetrystats(void) {
 	last_gcstelemetrystats_send = millis();
 }
 
+uint8_t uavtalk_parse_char(uint8_t c, uavtalk_message_t *msg) {
+	static uint8_t status = UAVTALK_PARSE_STATE_WAIT_SYNC;
+	static uint8_t crc = 0;
+	static uint8_t cnt = 0;
+
+	switch (status) {
+		case UAVTALK_PARSE_STATE_WAIT_SYNC:
+			if (c == UAVTALK_SYNC_VAL) {
+				status = UAVTALK_PARSE_STATE_GOT_SYNC;
+				msg->Sync = c;
+				crc = crc_table[0 ^ c];
+			}
+		break;
+		case UAVTALK_PARSE_STATE_GOT_SYNC:
+			crc = crc_table[crc ^ c];
+			if ((c & UAVTALK_TYPE_MASK) == UAVTALK_TYPE_VER) {
+				status = UAVTALK_PARSE_STATE_GOT_MSG_TYPE;
+				msg->MsgType = c;
+				cnt = 0;
+			}
+			else {
+				status = UAVTALK_PARSE_STATE_WAIT_SYNC;
+			}
+		break;
+		case UAVTALK_PARSE_STATE_GOT_MSG_TYPE:
+			crc = crc_table[crc ^ c];
+			cnt++;
+			if (cnt < 2) {
+				msg->Length = ((uint16_t) c);
+			}
+			else {
+				msg->Length += ((uint16_t) c) << 8;
+        if ((msg->Length < HEADER_LEN) || (msg->Length > 255 + HEADER_LEN)) {
+          status = UAVTALK_PARSE_STATE_WAIT_SYNC;
+        } else {
+				  status = UAVTALK_PARSE_STATE_GOT_LENGTH;
+				  cnt = 0;
+          }
+			}
+		break;
+		case UAVTALK_PARSE_STATE_GOT_LENGTH:
+			crc = crc_table[crc ^ c];
+			cnt++;
+			switch (cnt) {
+				case 1:
+					msg->ObjID = ((uint32_t) c);
+				break;
+				case 2:
+					msg->ObjID += ((uint32_t) c) << 8;
+				break;
+				case 3:
+					msg->ObjID += ((uint32_t) c) << 16;
+				break;
+				case 4:
+					msg->ObjID += ((uint32_t) c) << 24;
+					status = UAVTALK_PARSE_STATE_GOT_OBJID;
+					cnt = 0;
+				  break;
+			}
+		break;
+		case UAVTALK_PARSE_STATE_GOT_OBJID:
+			crc = crc_table[crc ^ c];
+			cnt++;
+			switch (cnt) {
+				case 1:
+					msg->InstID = ((uint32_t) c);
+				break;
+				case 2:
+					msg->InstID += ((uint32_t) c) << 8;
+					if (msg->Length == HEADER_LEN) { // no data exists
+						status = UAVTALK_PARSE_STATE_GOT_DATA;
+					} else {
+						status = UAVTALK_PARSE_STATE_GOT_INSTID;
+					}
+					cnt = 0;
+				break;
+			}
+		break;
+		case UAVTALK_PARSE_STATE_GOT_INSTID:
+			crc = crc_table[crc ^ c];
+			cnt++;
+			msg->Data[cnt - 1] = c;
+			if (cnt >= msg->Length - HEADER_LEN) {
+				status = UAVTALK_PARSE_STATE_GOT_DATA;
+				cnt = 0;
+			}
+		break;
+		case UAVTALK_PARSE_STATE_GOT_DATA:
+			msg->Crc = c;
+			status = UAVTALK_PARSE_STATE_GOT_CRC;
+		break;
+	}
+
+	if (status == UAVTALK_PARSE_STATE_GOT_CRC) {
+		status = UAVTALK_PARSE_STATE_WAIT_SYNC;
+		if (crc == msg->Crc) {
+			return msg->Length;
+		} else {
+			return 0;
+		}
+	} else {
+		return 0;
+	}
+}
+
 static inline float uavtalk_get_float(uavtalk_message_t *msg, int pos) {
 	float f;
 	memcpy(&f, msg->Data+pos, sizeof(float));
