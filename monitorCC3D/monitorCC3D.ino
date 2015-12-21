@@ -17,6 +17,11 @@ void setup() {
 }
 
 void loop() {
+
+  if(CC3Dcomm.available()) {
+    softwareSerialEvent();
+  }
+
   Serial.println(dt_roll);
   Serial.println(dt_pitch);
   Serial.println(dt_yaw);
@@ -24,11 +29,9 @@ void loop() {
 
 static uavtalk_message_t msg;
 
-void serialEvent(){
-  while (CC3Dcomm.available() > 0) {
-    uint8_t c = CC3Dcomm.read();
-    if (uavtalk_parse_char(c, &msg)) {
-      uavtalk_read(&msg);
-    }
+void softwareSerialEvent(){
+  uint8_t c = CC3Dcomm.read();
+  if (uavtalk_parse_char(c, &msg)) {
+    uavtalk_read(&msg);
   }
 }
