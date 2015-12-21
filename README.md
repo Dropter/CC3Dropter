@@ -1,6 +1,6 @@
-# This is a personal research topic.
-# Use it under the knowledge that it might not work properly, yet.
-# Enjoy the adventure :-).
+# This is a personal research topic.   
+Use it under the knowledge that it might not work properly, yet.   
+Enjoy the adventure :-).   
 
 # CC3Dropter
 Arduino code to get Telemetry data from CC3D board.
