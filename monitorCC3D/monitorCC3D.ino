@@ -25,6 +25,7 @@ void loop() {
   Serial.println(dt_roll);
   Serial.println(dt_pitch);
   Serial.println(dt_yaw);
+  Serial.println("//////");
 }
 
 static uavtalk_message_t msg;
