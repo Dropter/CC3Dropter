@@ -1,5 +1,4 @@
 #include <SoftwareSerial.h>
-#include "Config.h"
 #include "DataOI.h"
 #include "UAVTalk.h"
 
