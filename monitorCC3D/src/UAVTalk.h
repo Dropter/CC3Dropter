@@ -84,11 +84,4 @@ typedef struct __uavtalk_message {
   uint8_t Crc;
 } uavtalk_message_t;
 
-int uavtalk_read(uavtalk_message_t *msg);
-uint8_t uavtalk_parse_char(uint8_t c, uavtalk_message_t *msg);
-int uavtalk_state(void);
-void uavtalk_send_gcstelemetrystats(void);
-void uavtalk_respond_object(uavtalk_message_t *msg_to_respond, uint8_t type);
-void uavtalk_send_msg(uavtalk_message_t *msg);
-
 #endif
