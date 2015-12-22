@@ -1,3 +1,15 @@
+#include <Arduino.h>
+#include "Config.h"
+#include "DataOI.h"
+#include "UAVTalk.h"
+void uavtalk_send_msg(uavtalk_message_t *msg);
+void uavtalk_respond_object(uavtalk_message_t *msg_to_respond, uint8_t type);
+void uavtalk_send_gcstelemetrystats(void);
+uint8_t uavtalk_parse_char(uint8_t c, uavtalk_message_t *msg);
+static inline float uavtalk_get_float(uavtalk_message_t *msg, int pos);
+int uavtalk_read(uavtalk_message_t *msg);
+int uavtalk_state(void);
+#line 1 "src/UAVTalk.ino"
 /**
  ******************************************************************************
  *
@@ -25,9 +37,9 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include "Config.h"
-#include "DataOI.h"
-#include "UAVTalk.h"
+//#include "Config.h"
+//#include "DataOI.h"
+//#include "UAVTalk.h"
 
 #ifdef PROTOCOL_UAVTALK
 
