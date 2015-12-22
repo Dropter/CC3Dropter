@@ -2,6 +2,8 @@
 #include "DataOI.h"
 #include "UAVTalk.h"
 
+void softwareSerialEvent();
+
 /*
   Declaration of RX and TX pins for communication with CC3D.
 */
