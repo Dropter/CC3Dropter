@@ -11,4 +11,8 @@ static int16_t dt_roll = 0;
 static int16_t dt_pitch = 0;
 static int16_t dt_yaw = 0;
 
+static float acc_x = 0.0;
+static float acc_y = 0.0;
+static float acc_z = 0.0;
+
 #endif
