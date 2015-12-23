@@ -57,14 +57,14 @@ void setup() {
 void loop() {
   while(CC3Dcomm.available() > 0) {
 		uint8_t c = CC3Dcomm.read();
+
 	  if (uavtalk_parse_char(c, &msg)) {
 	    uavtalk_read(&msg);
 	  }
-  }
 
-  Serial.println(dt_roll);
-  Serial.println(dt_pitch);
-  Serial.println(dt_yaw);
+	  Serial.println(dt_pitch);
+
+  }
 }
 
 void uavtalk_send_msg(uavtalk_message_t *msg) {
