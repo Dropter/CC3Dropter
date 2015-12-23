@@ -28,7 +28,6 @@
 #ifndef UAVTALK_H
 #define UAVTALK_H
 
-#include "Config.h"
 #include <Arduino.h>
 
 #define HEADER_LEN 10
@@ -83,11 +82,5 @@ typedef struct __uavtalk_message {
   uint8_t Data[255];
   uint8_t Crc;
 } uavtalk_message_t;
-
-int uavtalk_read(void);
-int uavtalk_state(void);
-void uavtalk_send_gcstelemetrystats(void);
-void uavtalk_respond_object(uavtalk_message_t *msg_to_respond, uint8_t type);
-void uavtalk_send_msg(uavtalk_message_t *msg);
 
 #endif
