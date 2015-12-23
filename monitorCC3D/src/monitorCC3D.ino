@@ -40,6 +40,9 @@ void uavtalk_send_gcstelemetrystats(void);
 void uavtalk_respond_object(uavtalk_message_t *msg_to_respond, uint8_t type);
 void uavtalk_send_msg(uavtalk_message_t *msg);
 
+// Debugging variables.
+bool serialWorks = true;
+
 /*
   Declaration of RX and TX pins for communication with CC3D.
 */
@@ -63,6 +66,11 @@ void loop() {
 	  }
 		if(dt_pitch != 0) {
 	  	Serial.println(dt_pitch);
+		}
+
+		if(dt_pitch == 0 && serialWorks) {
+			Serial.println("The serial debugging port is working properly!");
+			serialWorks =  false;
 		}
   }
 }
