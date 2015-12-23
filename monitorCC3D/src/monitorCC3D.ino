@@ -2,6 +2,8 @@
 #include "DataOI.h"
 #include "UAVTalk.h"
 
+static uavtalk_message_t msg;
+
 static unsigned long last_gcstelemetrystats_send = 0;
 static unsigned long last_flighttelemetry_connect = 0;
 static uint8_t gcstelemetrystatus = TELEMETRYSTATS_STATE_DISCONNECTED;
@@ -53,23 +55,18 @@ void setup() {
 }
 
 void loop() {
-  if(CC3Dcomm.available()) {
-    softwareSerialEvent();
-  }
+  while(CC3Dcomm.available() > 0) {
+		uint8_t c = CC3Dcomm.read();
 
-  Serial.println(dt_roll);
-  Serial.println(dt_pitch);
-  Serial.println(dt_yaw);
-}
+	  if (uavtalk_parse_char(c, &msg)) {
+	    uavtalk_read(&msg);
+	  }
 
-static uavtalk_message_t msg;
-
-void softwareSerialEvent() {
-  uint8_t c = CC3Dcomm.read();
-  if (uavtalk_parse_char(c, &msg)) {
-    uavtalk_read(&msg);
+		Serial.println(dt_pitch);
   }
 }
+
+
 
 void uavtalk_send_msg(uavtalk_message_t *msg) {
 	uint8_t *d;
