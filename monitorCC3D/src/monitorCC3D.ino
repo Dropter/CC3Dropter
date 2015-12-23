@@ -42,30 +42,31 @@ SoftwareSerial CC3Dcomm(10, 11);
 
 void setup() {
   /* Setup of USB connection for debugging purposes.*/
-  Serial.begin(115200);
-  while(!Serial) {
+  Serial.begin(9600);
+  	while(!Serial) {
   }
 
-  CC3Dcomm.begin(57600);
+  //CC3Dcomm.begin(57600);
 
-	debugDelay(10000);
+	pinMode(13, OUTPUT);
 
 }
-
+int count = 0;
 void loop() {
-  while(CC3Dcomm.available() > 0) {
-		uint8_t c = CC3Dcomm.read();
+  while(Serial.available() > 0) {
+		uint8_t c = Serial.read();
 
-	  /*if (uavtalk_parse_char(c, &msg)) {
+		//Serial.println(count++);
+
+	  if (uavtalk_parse_char(c, &msg)) {
 	    uavtalk_read(&msg);
-	  }*/
+	  }
 
-		if(dt_pitch == 0 && serialWorks) {
-			Serial.println("The serial debugging port is working properly!");
-			serialWorks =  false;
+		if(dt_pitch != 0) {
+			//Serial.println(dt_pitch);
+			digitalWrite(13, HIGH);
 		}
-
-  }
+	}
 }
 
 void uavtalk_send_msg(uavtalk_message_t *msg) {
@@ -78,46 +79,46 @@ void uavtalk_send_msg(uavtalk_message_t *msg) {
    	}
 
    	c = (uint8_t) (msg->Sync);
-   	CC3Dcomm.write(c);
+   	Serial.write(c);
    	msg->Crc = crc_table[0 ^ c];
    	c = (uint8_t) (msg->MsgType);
-   	CC3Dcomm.write(c);
+   	Serial.write(c);
    	msg->Crc = crc_table[msg->Crc ^ c];
    	c = (uint8_t) (msg->Length & 0xff);
-   	CC3Dcomm.write(c);
+   	Serial.write(c);
    	msg->Crc = crc_table[msg->Crc ^ c];
    	c = (uint8_t) ((msg->Length >> 8) & 0xff);
-   	CC3Dcomm.write(c);
+   	Serial.write(c);
    	msg->Crc = crc_table[msg->Crc ^ c];
    	c = (uint8_t) (msg->ObjID & 0xff);
-   	CC3Dcomm.write(c);
+   	Serial.write(c);
    	msg->Crc = crc_table[msg->Crc ^ c];
    	c = (uint8_t) ((msg->ObjID >> 8) & 0xff);
-   	CC3Dcomm.write(c);
+   	Serial.write(c);
    	msg->Crc = crc_table[msg->Crc ^ c];
    	c = (uint8_t) ((msg->ObjID >> 16) & 0xff);
-   	CC3Dcomm.write(c);
+   	Serial.write(c);
    	msg->Crc = crc_table[msg->Crc ^ c];
    	c = (uint8_t) ((msg->ObjID >> 24) & 0xff);
-   	CC3Dcomm.write(c);
+   	Serial.write(c);
    	msg->Crc = crc_table[msg->Crc ^ c];
    	c = 0;
-   	CC3Dcomm.write(c);
+   	Serial.write(c);
    	msg->Crc = crc_table[msg->Crc ^ c];
    	c = 0;
-   	CC3Dcomm.write(c);
+   	Serial.write(c);
    	msg->Crc = crc_table[msg->Crc ^ c];
 
    	if (msg->Length > HEADER_LEN) {
    	  d = msg->Data;
    	  for (i=0; i < (msg->Length - HEADER_LEN); i++) {
    		  c = *d++;
-   		  CC3Dcomm.write(c);
+   		  Serial.write(c);
    		  msg->Crc = crc_table[msg->Crc ^ c];
        	  }
    	}
 
-   	CC3Dcomm.write(msg->Crc);
+   	Serial.write(msg->Crc);
    }
 
    void uavtalk_respond_object(uavtalk_message_t *msg_to_respond, uint8_t type) {
