@@ -1,6 +1,21 @@
+#include <Arduino.h>
 #include <SoftwareSerial.h>
 #include "DataOI.h"
 #include "UAVTalk.h"
+void setup();
+void loop();
+void softwareSerialEvent();
+void uavtalk_send_msg(uavtalk_message_t *msg);
+void uavtalk_respond_object(uavtalk_message_t *msg_to_respond, uint8_t type);
+void uavtalk_send_gcstelemetrystats(void);
+uint8_t uavtalk_parse_char(uint8_t c, uavtalk_message_t *msg);
+static inline float uavtalk_get_float(uavtalk_message_t *msg, int pos);
+int uavtalk_read(uavtalk_message_t *msg);
+int uavtalk_state(void);
+#line 1 "src/monitorCC3D.ino"
+//#include <SoftwareSerial.h>
+//#include "DataOI.h"
+//#include "UAVTalk.h"
 
 static unsigned long last_gcstelemetrystats_send = 0;
 static unsigned long last_flighttelemetry_connect = 0;
@@ -11,8 +26,6 @@ static uint8_t gcstelemetrystats_obj_len = GCSTELEMETRYSTATS_OBJ_LEN;
 static uint8_t gcstelemetrystats_obj_status = GCSTELEMETRYSTATS_OBJ_STATUS;
 
 static uint8_t flighttelemetrystats_obj_status = FLIGHTTELEMETRYSTATS_OBJ_STATUS;
-
-static uavtalk_message_t msg;
 
 static const uint8_t crc_table[256] = {
 	0x00, 0x07, 0x0e, 0x09, 0x1c, 0x1b, 0x12, 0x15, 0x38, 0x3f, 0x36, 0x31, 0x24, 0x23, 0x2a, 0x2d,
@@ -55,16 +68,22 @@ void setup() {
 }
 
 void loop() {
-  while(CC3Dcomm.available() > 0) {
-		uint8_t c = CC3Dcomm.read();
-	  if (uavtalk_parse_char(c, &msg)) {
-	    uavtalk_read(&msg);
-	  }
+  if(CC3Dcomm.available()) {
+    softwareSerialEvent();
   }
 
   Serial.println(dt_roll);
   Serial.println(dt_pitch);
   Serial.println(dt_yaw);
+}
+
+static uavtalk_message_t msg;
+
+void softwareSerialEvent() {
+  uint8_t c = CC3Dcomm.read();
+  if (uavtalk_parse_char(c, &msg)) {
+    uavtalk_read(&msg);
+  }
 }
 
 void uavtalk_send_msg(uavtalk_message_t *msg) {
