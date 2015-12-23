@@ -61,9 +61,10 @@ void loop() {
 	  if (uavtalk_parse_char(c, &msg)) {
 	    uavtalk_read(&msg);
 	  }
-
-		Serial.println(dt_pitch);
-  }
+		if(dt_pitch != 0) {
+			Serial.println(dt_pitch);
+  	}
+	}
 }
 
 
