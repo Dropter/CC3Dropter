@@ -33,12 +33,12 @@ static const uint8_t crc_table[256] = {
   0xde, 0xd9, 0xd0, 0xd7, 0xc2, 0xc5, 0xcc, 0xcb, 0xe6, 0xe1, 0xe8, 0xef, 0xfa, 0xfd, 0xf4, 0xf3 };
 
 /* Functions definition */
-int uavtalk_read(uavtalk_message_t *msg);
+/*int uavtalk_read(uavtalk_message_t *msg);
 uint8_t uavtalk_parse_char(uint8_t c, uavtalk_message_t *msg);
 int uavtalk_state(void);
 void uavtalk_send_gcstelemetrystats(void);
 void uavtalk_respond_object(uavtalk_message_t *msg_to_respond, uint8_t type);
-void uavtalk_send_msg(uavtalk_message_t *msg);
+void uavtalk_send_msg(uavtalk_message_t *msg);*/
 
 // Debugging variables.
 bool serialWorks = true;
@@ -55,21 +55,24 @@ void setup() {
   }
 
   CC3Dcomm.begin(57600);
+
+	debugDelay(10000);
+
 }
 
 void loop() {
   while(CC3Dcomm.available() > 0) {
 		uint8_t c = CC3Dcomm.read();
 
-	  if (uavtalk_parse_char(c, &msg)) {
+	  /*if (uavtalk_parse_char(c, &msg)) {
 	    uavtalk_read(&msg);
-	  }
+	  }*/
 
 		if(dt_pitch == 0 && serialWorks) {
 			Serial.println("The serial debugging port is working properly!");
 			serialWorks =  false;
 		}
-		
+
   }
 }
 
@@ -319,3 +322,7 @@ void uavtalk_send_msg(uavtalk_message_t *msg) {
    int uavtalk_state(void) {
    	return gcstelemetrystatus;
    }
+
+	 void debugDelay(double time) {
+		 delay(time);
+	 }
